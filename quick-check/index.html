@@ -518,6 +518,27 @@ compliance.</p>
         return;
       }
 
+      if (data.limitado) {
+        /* El receptor tiene topes: tres envios por direccion y dia, y una
+           reserva de cuota de correo para que un pico de captacion no deje al
+           socio sin los avisos internos. Ninguno de los dos se gasta
+           reintentando el MISMO envio -eso sale antes por el lead_id-, asi que
+           llegar aqui significa peticiones distintas.
+
+           Se deja reintentar mas tarde: el receptor no marca nada cuando frena,
+           precisamente para que el mismo intento pueda salir cuando el cupo se
+           renueve. */
+        estado.textContent = (data.motivo === "cuota")
+          ? "Email delivery is paused for today. Your result is still on this "
+            + "page — write to hello@grupotraccion.com and we will send it."
+          : "We have already emailed this result to that address today. Check "
+            + "your inbox, including the spam folder.";
+        if (window.gtEvento) {
+          window.gtEvento("LEAD_FAILED", { causa: "limitado:" + (data.motivo || "") });
+        }
+        return;
+      }
+
       if (data.ignorado) {
         /* La trampa del formulario. No deberia llegar aqui, pero si llega, no
            se ha mandado nada y no se va a decir que si. */
