@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
-Sitemap: https://grupotraccion.com/sitemap.xml
+Disallow: /
